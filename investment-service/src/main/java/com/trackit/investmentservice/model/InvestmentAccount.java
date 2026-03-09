@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "investment_accounts")
 public class InvestmentAccount {
@@ -65,67 +68,5 @@ public class InvestmentAccount {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    //Constructors
-
     protected InvestmentAccount() {}
-
-    public static InvestmentAccount create(
-            UUID userId,
-            AccountType accountType,
-            String brokerName,
-            String displayName,
-            String accountNumber,
-            String currency,
-            String notes
-    ) {
-        InvestmentAccount account = new InvestmentAccount();
-        account.userId = userId;
-        account.accountType = accountType;
-        account.brokerName = brokerName;
-        account.displayName = displayName;
-        account.accountNumber = accountNumber;
-        account.currency = currency != null ? currency : "PLN";
-        account.notes = notes;
-        account.active = true;
-        return account;
-    }
-
-    //Business methods
-
-    public String resolvedDisplayName() {
-        if (displayName != null && !displayName.isBlank()) {
-            return displayName;
-        }
-        return brokerName + " " + accountType.name();
-    }
-
-    public void deactivate() {
-        this.active = false;
-    }
-
-    //Getter
-    public UUID getId() { return id; }
-    public UUID getUserId() { return userId; }
-    public AccountType getAccountType() { return accountType; }
-    public String getBrokerName() { return brokerName; }
-    public String getDisplayName() { return displayName; }
-    public String getAccountNumber() { return accountNumber; }
-    public String getCurrency() { return currency; }
-    public boolean isActive() { return active; }
-    public String getNotes() { return notes; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-
-    //Setters
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
 }

@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: investment-service
+
+  datasource:
+    url: jdbc:h2:mem:investmentdb
+    driver-class-name: org.h2.Driver
+    username: marcin
+    password: marcin
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+server:
+  port: 4000
