@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trackit.investmentservice.dto.InvestmentAccountCreateDTO;
 import com.trackit.investmentservice.dto.InvestmentAccountResponseDTO;
 import com.trackit.investmentservice.dto.InvestmentAccountUpdateDTO;
+import com.trackit.investmentservice.exception.ResourceNotFoundException;
 import com.trackit.investmentservice.model.AccountType;
 import com.trackit.investmentservice.service.InvestmentAccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,13 +99,13 @@ public class InvestmentAccountControllerTest {
     }
 
     @Test
-    void getAccountById_returns500_whenAccountNotFound() throws Exception {
+    void getAccountById_returns404_whenAccountNotFound() throws Exception {
         when(investmentAccountService.getAccountById(accountId, userId))
-                .thenThrow(new RuntimeException("Account not found"));
+                .thenThrow(new ResourceNotFoundException("Account not found"));
 
         mockMVc.perform(get("/api/investment-accounts/{id}", accountId)
                     .header("X-User-Id", userId.toString()))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     // POST /api/investment-accounts

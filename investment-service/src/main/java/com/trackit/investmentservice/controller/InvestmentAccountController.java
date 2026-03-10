@@ -4,6 +4,8 @@ import com.trackit.investmentservice.dto.InvestmentAccountCreateDTO;
 import com.trackit.investmentservice.dto.InvestmentAccountResponseDTO;
 import com.trackit.investmentservice.dto.InvestmentAccountUpdateDTO;
 import com.trackit.investmentservice.service.InvestmentAccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/investment-accounts")
+@Tag(name = "Investment Account", description = "API for managing investment accounts")
 @RequiredArgsConstructor
 public class InvestmentAccountController {
 
@@ -22,6 +25,7 @@ public class InvestmentAccountController {
 
     //GET /api/investment-accounts
     @GetMapping
+    @Operation(summary = "Get All Investment Accounts")
     public ResponseEntity<List<InvestmentAccountResponseDTO>> getAllAccounts(
             @RequestHeader("X-User-Id") UUID userId
     ) {
@@ -30,6 +34,7 @@ public class InvestmentAccountController {
 
     //GET /api/investment-accounts/{id}
     @GetMapping("/{id}")
+    @Operation(summary = "Get Specific Investment Account")
     public ResponseEntity<InvestmentAccountResponseDTO> getAccountById(
             @PathVariable UUID id,
             @RequestHeader("X-User-Id") UUID userId
@@ -39,6 +44,7 @@ public class InvestmentAccountController {
 
     //POST /api/investment-accounts
     @PostMapping
+    @Operation(summary = "Create a new Investment Account")
     public ResponseEntity<InvestmentAccountResponseDTO> createAccount(
             @RequestHeader("X-User-Id") UUID userId,
             @Valid @RequestBody InvestmentAccountCreateDTO request
@@ -50,6 +56,7 @@ public class InvestmentAccountController {
 
     //PATCH /api/investment-accounts/{id}
     @PatchMapping("/{id}")
+    @Operation(summary = "Update an existing Investment Account")
     public ResponseEntity<InvestmentAccountResponseDTO> updateAccount(
             @PathVariable UUID id,
             @RequestHeader("X-User-Id") UUID userId,
@@ -60,6 +67,7 @@ public class InvestmentAccountController {
 
     //DELETE /api/investment-accounts/{id}
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deactive specific Investment Account")
     public ResponseEntity<Void> deactiveAccount(
             @PathVariable UUID id,
             @RequestHeader("X-User-Id") UUID userId

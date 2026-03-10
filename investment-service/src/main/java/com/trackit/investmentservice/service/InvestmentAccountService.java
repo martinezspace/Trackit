@@ -3,6 +3,7 @@ package com.trackit.investmentservice.service;
 import com.trackit.investmentservice.dto.InvestmentAccountCreateDTO;
 import com.trackit.investmentservice.dto.InvestmentAccountResponseDTO;
 import com.trackit.investmentservice.dto.InvestmentAccountUpdateDTO;
+import com.trackit.investmentservice.exception.ResourceNotFoundException;
 import com.trackit.investmentservice.mapper.InvestmentAccountMapper;
 import com.trackit.investmentservice.model.InvestmentAccount;
 import com.trackit.investmentservice.repository.InvestmentAccountRepository;
@@ -29,7 +30,7 @@ public class InvestmentAccountService {
 
     public InvestmentAccountResponseDTO getAccountById(UUID id, UUID userId) {
         InvestmentAccount account = investmentAccountRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new RuntimeException("Account not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
         return investmentAccountMapper.toResponseDTO(account);
     }
 
@@ -41,14 +42,14 @@ public class InvestmentAccountService {
 
     public InvestmentAccountResponseDTO updateAccount(UUID id, UUID userId, InvestmentAccountUpdateDTO request) {
         InvestmentAccount existing = investmentAccountRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new RuntimeException("Account not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
         InvestmentAccount updated = investmentAccountMapper.applyUpdate(existing, request);
         return investmentAccountMapper.toResponseDTO(investmentAccountRepository.save(updated));
     }
 
     public void deactiveAccount(UUID id, UUID userId) {
         InvestmentAccount existing = investmentAccountRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new RuntimeException("Account not found " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found " + id));
         existing.setActive(false);
         investmentAccountRepository.save(existing);
     }
