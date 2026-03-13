@@ -24,5 +24,17 @@ spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
+  mvc:
+    problemdetails:
+      enabled: true
 server:
   port: 4000
+
+internal:
+  key: internal-service-key
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
