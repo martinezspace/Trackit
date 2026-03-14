@@ -27,5 +27,5 @@ public class ImportBatchMapper {
                 : null);
         return response;
     }
-
+    //toEntity doesn't exists, logic will belong in the service
 }
