@@ -60,6 +60,9 @@ public class ImportBatch {
     @Column(name = "imported_count")
     private Integer importedCount;
 
+    @Column(name = "error count")
+    private Integer errorCount;
+
     //JSONB in PostgreSQL, TEXT in H2 for local dev
     //JSONB for quering, fileting and indexing individual fields inside
     @Column(name = "error_details", columnDefinition = "TEXT")
