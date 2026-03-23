@@ -4,4 +4,5 @@ public enum BrokerFormat {
     XTB,
     MBANK,
     BOSSA,
+    TRADING212,
 }
