@@ -70,6 +70,11 @@ public class InvestmentTransactionService {
     //Internal method - not exposed to controller
     public void cancelAllTransactionsForBatch(UUID batchId) {
         List<InvestmentTransaction> transactions = transactionRepository.findByBatch_Id(batchId);
+
+        if (transactions.isEmpty()) {
+            return;
+        }
+
         transactions.forEach(t -> t.setCancelled(true));
         transactionRepository.saveAll(transactions);
     }
