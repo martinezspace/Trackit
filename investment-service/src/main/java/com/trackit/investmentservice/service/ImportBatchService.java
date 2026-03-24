@@ -11,6 +11,7 @@ import com.trackit.investmentservice.repository.ImportBatchRepository;
 import com.trackit.investmentservice.repository.InvestmentAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class ImportBatchService {
 
     private final ImportBatchRepository importBatchRepository;
     private final InvestmentAccountRepository investmentAccountRepository;
+    private final InvestmentTransactionService transactionService;
     private final ImportBatchMapper importBatchMapper;
 
     //Queries
@@ -66,6 +68,7 @@ public class ImportBatchService {
         return importBatchMapper.toResponseDTO(importBatchRepository.save(batch));
     }
 
+    @Transactional
     public ImportBatchResponseDTO cancelBatch(UUID batchId, UUID accountId, UUID userId) {
         verifyAccountOwnership(accountId, userId);
 
@@ -79,6 +82,10 @@ public class ImportBatchService {
             throw new IllegalStateException("Cannot cancel a batch with status: " + batch.getStatus());
         }
 
+        //Cancel all transactions from batch first
+        transactionService.cancelAllTransactionsForBatch(batchId);
+
+        //Then cancel the batch itself
         batch.setStatus(ImportStatus.CANCELLED);
         return importBatchMapper.toResponseDTO(importBatchRepository.save(batch));
     }
