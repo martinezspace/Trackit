@@ -24,6 +24,7 @@ public class ImportBatchService {
     private final ImportBatchRepository importBatchRepository;
     private final InvestmentAccountRepository investmentAccountRepository;
     private final InvestmentTransactionService transactionService;
+    private final HoldingService holdingService;
     private final ImportBatchMapper importBatchMapper;
 
     //Queries
@@ -87,7 +88,11 @@ public class ImportBatchService {
 
         //Then cancel the batch itself
         batch.setStatus(ImportStatus.CANCELLED);
-        return importBatchMapper.toResponseDTO(importBatchRepository.save(batch));
+        ImportBatch savedBatch = importBatchRepository.save(batch);
+
+        holdingService.recalculateHoldings(accountId);
+
+        return importBatchMapper.toResponseDTO(savedBatch);
     }
 
     //Helper

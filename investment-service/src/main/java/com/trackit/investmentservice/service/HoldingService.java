@@ -37,7 +37,7 @@ public class HoldingService {
     }
 
     //Get holding for a specific instrument in an account
-    public HoldingResponseDTO getHoldingById(UUID accountId, UUID instrumentId, UUID userId) {
+    public HoldingResponseDTO getHoldingByInstrument(UUID accountId, UUID instrumentId, UUID userId) {
         verifyAccountOwnership(accountId, userId);
         Holding holding = holdingRepository.findByAccount_IdAndInstrument_Id(accountId, instrumentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Holding Not Found For Instrument: " + instrumentId));
