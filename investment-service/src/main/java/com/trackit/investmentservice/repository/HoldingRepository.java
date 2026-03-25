@@ -18,9 +18,6 @@ public interface HoldingRepository extends JpaRepository<Holding, UUID> {
     //Used during recalculation to find existing holding or confirm absence
     Optional<Holding> findByAccount_IdAndInstrument_Id(UUID accountId, UUID instrumentId);
 
-    //Ownership check - verify holding belongs to user's account
-    Optional<Holding> findByIdAndAccount_Id(UUID id, UUID accountId);
-
     //All holdings for a specific instrument across all accounts
     //Used by PriceWorker to update current_price when new price is fetched
     List<Holding> findByInstrument_Id(UUID instrumentId);
