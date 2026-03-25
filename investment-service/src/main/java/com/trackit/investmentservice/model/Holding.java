@@ -35,7 +35,7 @@ public class Holding {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accound_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = false)
     private InvestmentAccount account;
 
     @NotNull
