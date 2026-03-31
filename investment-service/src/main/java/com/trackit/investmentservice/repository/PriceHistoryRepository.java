@@ -14,7 +14,7 @@ public interface PriceHistoryRepository extends JpaRepository<PriceHistory, UUID
 
     //Latest price for an instrument - used after fetching from Alpha Vantage
     //to update holdings current_price
-    Optional<PriceHistory> findTopInstrument_IdOrderByPriceDateDesc(UUID instrumentId);
+    Optional<PriceHistory> findTopByInstrument_IdOrderByPriceDateDesc(UUID instrumentId);
 
     //Price history for a date range - used for portfolio charts
     // e.g. last 30 days, last 90, last year

@@ -34,7 +34,7 @@ public class PriceHistoryService {
     //Queries
     //Latest price for an instrument - used by frontend for current price display
     public PriceHistoryResponseDTO getLatestPrice(UUID instrumentId) {
-        return priceHistoryRepository.findTopInstrument_IdOrderByPriceDateDesc(instrumentId)
+        return priceHistoryRepository.findTopByInstrument_IdOrderByPriceDateDesc(instrumentId)
                 .map(priceHistoryMapper::toResponseDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("No Price History Found For Instrument: " + instrumentId));
     }
@@ -60,7 +60,7 @@ public class PriceHistoryService {
         if (priceHistoryRepository.existsByInstrument_IdAndPriceDate(
                 request.getInstrumentId(), request.getPriceDate())) {
             return priceHistoryRepository
-                    .findTopInstrument_IdOrderByPriceDateDesc(request.getInstrumentId())
+                    .findTopByInstrument_IdOrderByPriceDateDesc(request.getInstrumentId())
                     .map(priceHistoryMapper::toResponseDTO)
                     .orElseThrow();
         }
