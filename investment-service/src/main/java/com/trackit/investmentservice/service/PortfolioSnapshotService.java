@@ -36,7 +36,7 @@ public class PortfolioSnapshotService {
     }
 
     //Date range - used for 1M, 3M, 1Y chart views
-    public List<PortfolioSnapshotResponseDTO> getSnapshotByDateRange(
+    public List<PortfolioSnapshotResponseDTO> getSnapshotsByDateRange(
             UUID accountId, UUID userId, LocalDate from, LocalDate to) {
         verifyAccountOwnership(accountId, userId);
         return snapshotRepository
