@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: trackit-investment-service-postgres
+    environment:
+      POSTGRES_DB: investmentdb
+      POSTGRES_USER: trackit
+      POSTGRES_PASSWORD: trackit_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trackit -d investmentdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: trackit-localstack
+    environment:
+      - SERVICES=s3,sqs,secretsmanager,ses
+      - DEFAULT_REGION=eu-central-1
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:-}
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  investment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trackit-investment-service-app
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: investmentdb
+      DB_USERNAME: trackit
+      DB_PASSWORD: trackit_local
+      AWS_ENDPOINT: http://localstack:4566
+      AWS_REGION: eu-central-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      INTERNAL_KEY: internal-service-key
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  localstack_data:
