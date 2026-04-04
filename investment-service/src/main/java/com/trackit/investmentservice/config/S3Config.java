@@ -24,7 +24,7 @@ public class S3Config {
 
     //Only set in local profile for localstack
     //on aws sdk uses defaultcredentialprovider
-    @Value("${cloud.aws.credentials.access-key:#null}}")
+    @Value("${cloud.aws.credentials.access-key:#{null}}")
     private String accessKey;
 
     @Value("${cloud.aws.credentials.secret-key:#{null}}")
