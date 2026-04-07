@@ -60,7 +60,7 @@ public class ImportBatch {
     @Column(name = "imported_count")
     private Integer importedCount;
 
-    @Column(name = "error count")
+    @Column(name = "error_count")
     private Integer errorCount;
 
     //JSONB in PostgreSQL, TEXT in H2 for local dev
