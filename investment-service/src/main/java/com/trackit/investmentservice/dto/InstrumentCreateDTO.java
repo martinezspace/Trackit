@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class InstrumentCreateDTO {
 
-    @NotBlank(message = "ISIN is required")
+    //Nullable - PPK funds and some internal instruments don't have an ISIN
     @Size(min = 12, max = 12, message = "ISIN must be exactly 12 characters")
     private String isin;
 

@@ -15,13 +15,16 @@ public interface InstrumentRepository extends JpaRepository<Instrument, UUID> {
     //Lookup by ISIN - priary way to find an instrument
     //Used during CSV import to check if instrument already exists
     Optional<Instrument> findByIsin(String isin);
-
+    //Lookup by name - used for PPK funds and instruments without ISIN
+    Optional<Instrument> findByName(String name);
     //Lookup by ticker - secondary, nullable so Optional
     Optional<Instrument> findByTicker(String ticker);
 
     //Filter by type
     List<Instrument> findByInstrumentType(InstrumentType instrumentType);
 
-    //Check existence by ISIN before insterting - avoids duplicate
+    //Existence checks
     boolean existsByIsin(String isin);
+    boolean existsByName(String name);
+
 }

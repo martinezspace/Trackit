@@ -43,18 +43,36 @@ public class InstrumentService {
 
     //Commands
     public InstrumentResponseDTO createInstrument(InstrumentCreateDTO request) {
-        //Prevent duplicate ISIN - check before instering
-        if (instrumentRepository.existsByIsin(request.getIsin())) {
-            throw new IllegalArgumentException("Instrument already exists with ISIN: " + request.getIsin());
+        //If ISIN provided - check for duplicates
+        if (request.getIsin() != null && !request.getIsin().isEmpty()) {
+            if (instrumentRepository.existsByIsin(request.getIsin())) {
+                throw new IllegalArgumentException(
+                        "Instrument already exists with ISIN: " + request.getIsin());
+            }
         }
+        //If no ISIN - check for duplicate name (PPK funds)
+        if (request.getIsin() == null || request.getIsin().isEmpty()) {
+            if (instrumentRepository.existsByName(request.getName())) {
+                throw new IllegalArgumentException(
+                        "Instrument already exists with name: " + request.getName());
+            }
+        }
+
         Instrument instrument = instrumentMapper.toEntity(request);
         return instrumentMapper.toResponseDTO(instrumentRepository.save(instrument));
     }
 
     //Used during CSV import - find existing or create new instrument
-    //Avoids duplicate ISINs when the same instrument appears across multiple imports
     public InstrumentResponseDTO findOrCreate(InstrumentCreateDTO request) {
-        return instrumentRepository.findByIsin(request.getIsin())
+        //Try ISIN first
+        if (request.getIsin() != null && !request.getIsin().isEmpty()) {
+            return instrumentRepository.findByIsin(request.getIsin())
+                    .map(instrumentMapper::toResponseDTO)
+                    .orElseGet(() -> createInstrument(request));
+        }
+
+        //Fallback to name lookup for PPK funds
+        return instrumentRepository.findByName(request.getName())
                 .map(instrumentMapper::toResponseDTO)
                 .orElseGet(() -> createInstrument(request));
     }

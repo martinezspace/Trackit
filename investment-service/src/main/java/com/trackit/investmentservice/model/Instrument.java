@@ -24,10 +24,11 @@ public class Instrument {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
+    //Nullable - ppk funds and some internal instruments dont have an ISIN
     //ISIN is always exactly 12 characters
     @NotBlank
     @Size(min = 12, max = 12, message = "ISIN must be exactly 12 characters")
-    @Column(name = "isin", nullable = false, unique = true, length = 12)
+    @Column(name = "isin", unique = true, length = 12)
     private String isin;
 
     //Nullable - some instruments may not have a ticker

@@ -17,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/import")
 @RequiredArgsConstructor
-@Tag(name = "Import", description = "CSV file import for investment transactions")
+@Tag(name = "Import", description = "CSV and XLS file import for investment transactions")
 public class ImportController {
 
     private final ImportService importService;
@@ -26,8 +26,8 @@ public class ImportController {
     //Accepts multipart/form-data - file upload + metadata
     //Returns immediately with batch details - processing happens in background
     @Operation(
-            summary = "Upload CSV file to import",
-            description = "Uploads CSV file to S3 and triggers async processing." +
+            summary = "Upload file to import",
+            description = "Uploads CSV or XLS file to S3 and triggers async processing." +
                     "Returns immediatey with batchId - poll GET /api/import-batches/{id} for status"
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -41,8 +41,8 @@ public class ImportController {
            throw new IllegalArgumentException("File is empty");
        }
 
-        if (!isCsvFile(file)) {
-            throw new IllegalArgumentException("Only CSV files are supported");
+        if (!isSupportedFile(file)) {
+            throw new IllegalArgumentException("Unsupported file type.");
         }
 
         return ResponseEntity
@@ -51,11 +51,16 @@ public class ImportController {
     }
 
     //helper
-    private boolean isCsvFile(MultipartFile file) {
+    private boolean isSupportedFile(MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (filename == null) return false;
-        return filename.toLowerCase().endsWith(".csv") ||
+        String lower = filename.toLowerCase();
+        return lower.endsWith(".csv") ||
+                lower.endsWith(".xls") ||
+                lower.endsWith(".xlsx") ||
                 "text/csv".equals(file.getContentType()) ||
-                "application/vnd.ms-excel".equals(file.getContentType());
+                "application/vnd.ms-excel".equals(file.getContentType()) ||
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        .equals(file.getContentType());
     }
 }
