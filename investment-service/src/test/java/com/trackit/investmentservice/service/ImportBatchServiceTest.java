@@ -59,14 +59,14 @@ class ImportBatchServiceTest {
 
         testBatch = new ImportBatch();
         testBatch.setAccount(testAccount);
-        testBatch.setBrokerFormat(BrokerFormat.TRADING212);
+        testBatch.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         testBatch.setFilename("from_2024-01-01_to_2024-12-31.csv");
         testBatch.setStatus(ImportStatus.PENDING);
 
         testResponseDTO = new ImportBatchResponseDTO();
         testResponseDTO.setId(batchId.toString());
         testResponseDTO.setAccountId(accountId.toString());
-        testResponseDTO.setBrokerFormat("TRADING212");
+        testResponseDTO.setBrokerFormat("TRADING212_STANDARD");
         testResponseDTO.setFilename("from_2024-01-01_to_2024-12-31.csv");
         testResponseDTO.setStatus("PENDING");
     }
@@ -111,7 +111,7 @@ class ImportBatchServiceTest {
 
         ImportBatchResponseDTO result = importBatchService.getBatchById(batchId, accountId, userId);
 
-        assertThat(result.getBrokerFormat()).isEqualTo("TRADING212");
+        assertThat(result.getBrokerFormat()).isEqualTo("TRADING212_STANDARD");
         assertThat(result.getStatus()).isEqualTo("PENDING");
     }
 
@@ -133,7 +133,7 @@ class ImportBatchServiceTest {
     void createBatch_savesAndReturnsDTO_whenNoActiveImport() {
         ImportBatchCreateDTO createDTO = new ImportBatchCreateDTO();
         createDTO.setAccountId(accountId);
-        createDTO.setBrokerFormat(BrokerFormat.TRADING212);
+        createDTO.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         createDTO.setFilename("from_2024-01-01_to_2024-12-31.csv");
 
         when(investmentAccountRepository.findByIdAndUserId(accountId, userId))
@@ -148,7 +148,7 @@ class ImportBatchServiceTest {
         ImportBatchResponseDTO result = importBatchService.createBatch(createDTO, userId);
 
         assertThat(result.getStatus()).isEqualTo("PENDING");
-        assertThat(result.getBrokerFormat()).isEqualTo("TRADING212");
+        assertThat(result.getBrokerFormat()).isEqualTo("TRADING212_STANDARD");
         verify(importBatchRepository, times(1)).save(any(ImportBatch.class));
     }
 
@@ -156,7 +156,7 @@ class ImportBatchServiceTest {
     void createBatch_throwsException_whenActiveImportExists() {
         ImportBatchCreateDTO createDTO = new ImportBatchCreateDTO();
         createDTO.setAccountId(accountId);
-        createDTO.setBrokerFormat(BrokerFormat.TRADING212);
+        createDTO.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         createDTO.setFilename("from_2024-01-01_to_2024-12-31.csv");
 
         when(investmentAccountRepository.findByIdAndUserId(accountId, userId))
@@ -175,7 +175,7 @@ class ImportBatchServiceTest {
     void createBatch_throwsException_whenAccountNotFound() {
         ImportBatchCreateDTO createDTO = new ImportBatchCreateDTO();
         createDTO.setAccountId(accountId);
-        createDTO.setBrokerFormat(BrokerFormat.TRADING212);
+        createDTO.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         createDTO.setFilename("test.csv");
 
         when(investmentAccountRepository.findByIdAndUserId(accountId, userId))

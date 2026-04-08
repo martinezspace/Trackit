@@ -64,7 +64,7 @@ class InvestmentTransactionRepositoryTest {
 
         batch = new ImportBatch();
         batch.setAccount(account);
-        batch.setBrokerFormat(BrokerFormat.TRADING212);
+        batch.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         batch.setFilename("january.csv");
         batch.setStatus(ImportStatus.COMPLETED);
         importBatchRepository.save(batch);
@@ -201,7 +201,7 @@ class InvestmentTransactionRepositoryTest {
     void findByBatch_Id_returnsEmpty_whenNoBatchTransactions() {
         ImportBatch emptyBatch = new ImportBatch();
         emptyBatch.setAccount(account);
-        emptyBatch.setBrokerFormat(BrokerFormat.TRADING212);
+        emptyBatch.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         emptyBatch.setFilename("empty.csv");
         emptyBatch.setStatus(ImportStatus.COMPLETED);
         importBatchRepository.save(emptyBatch);

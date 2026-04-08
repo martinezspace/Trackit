@@ -32,7 +32,7 @@ class ImportBatchRepositoryTest {
         account = new InvestmentAccount();
         account.setUserId(UUID.randomUUID());
         account.setAccountType(AccountType.BROKERAGE);
-        account.setBrokerName("Trading212");
+        account.setBrokerName("Trading212_STANDARD");
         account.setCurrency("PLN");
         account.setActive(true);
         investmentAccountRepository.save(account);
@@ -40,7 +40,7 @@ class ImportBatchRepositoryTest {
         otherAccount = new InvestmentAccount();
         otherAccount.setUserId(UUID.randomUUID());
         otherAccount.setAccountType(AccountType.BROKERAGE);
-        otherAccount.setBrokerName("XTB");
+        otherAccount.setBrokerName("XTB_STANDARD");
         otherAccount.setCurrency("PLN");
         otherAccount.setActive(true);
         investmentAccountRepository.save(otherAccount);
@@ -48,7 +48,7 @@ class ImportBatchRepositoryTest {
         // Pending batch for account
         pendingBatch = new ImportBatch();
         pendingBatch.setAccount(account);
-        pendingBatch.setBrokerFormat(BrokerFormat.TRADING212);
+        pendingBatch.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         pendingBatch.setFilename("january.csv");
         pendingBatch.setStatus(ImportStatus.PENDING);
         importBatchRepository.save(pendingBatch);
@@ -56,7 +56,7 @@ class ImportBatchRepositoryTest {
         // Completed batch for account
         completedBatch = new ImportBatch();
         completedBatch.setAccount(account);
-        completedBatch.setBrokerFormat(BrokerFormat.TRADING212);
+        completedBatch.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         completedBatch.setFilename("february.csv");
         completedBatch.setStatus(ImportStatus.COMPLETED);
         importBatchRepository.save(completedBatch);
@@ -64,7 +64,7 @@ class ImportBatchRepositoryTest {
         // Batch for other account — should never appear in account's results
         ImportBatch otherBatch = new ImportBatch();
         otherBatch.setAccount(otherAccount);
-        otherBatch.setBrokerFormat(BrokerFormat.XTB);
+        otherBatch.setBrokerFormat(BrokerFormat.XTB_STANDARD);
         otherBatch.setFilename("other.csv");
         otherBatch.setStatus(ImportStatus.PENDING);
         importBatchRepository.save(otherBatch);

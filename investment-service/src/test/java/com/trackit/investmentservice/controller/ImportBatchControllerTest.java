@@ -49,7 +49,7 @@ class ImportBatchControllerTest {
         testResponseDTO = new ImportBatchResponseDTO();
         testResponseDTO.setId(batchId.toString());
         testResponseDTO.setAccountId(accountId.toString());
-        testResponseDTO.setBrokerFormat("TRADING212");
+        testResponseDTO.setBrokerFormat("TRADING212_STANDARD");
         testResponseDTO.setFilename("from_2024-01-01_to_2024-12-31.csv");
         testResponseDTO.setStatus("PENDING");
     }
@@ -66,7 +66,7 @@ class ImportBatchControllerTest {
                         .header("X-User-Id", userId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status").value("PENDING"))
-                .andExpect(jsonPath("$[0].brokerFormat").value("TRADING212"));
+                .andExpect(jsonPath("$[0].brokerFormat").value("TRADING212_STANDARD"));
     }
 
     @Test
@@ -112,7 +112,7 @@ class ImportBatchControllerTest {
     void createBatch_returns201WithDTO() throws Exception {
         ImportBatchCreateDTO createDTO = new ImportBatchCreateDTO();
         createDTO.setAccountId(accountId);
-        createDTO.setBrokerFormat(BrokerFormat.TRADING212);
+        createDTO.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         createDTO.setFilename("from_2024-01-01_to_2024-12-31.csv");
 
         when(importBatchService.createBatch(any(ImportBatchCreateDTO.class), eq(userId)))
@@ -124,14 +124,14 @@ class ImportBatchControllerTest {
                         .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("PENDING"))
-                .andExpect(jsonPath("$.brokerFormat").value("TRADING212"));
+                .andExpect(jsonPath("$.brokerFormat").value("TRADING212_STANDARD"));
     }
 
     @Test
     void createBatch_returns400_whenAccountIdMissing() throws Exception {
         ImportBatchCreateDTO createDTO = new ImportBatchCreateDTO();
         // accountId intentionally missing
-        createDTO.setBrokerFormat(BrokerFormat.TRADING212);
+        createDTO.setBrokerFormat(BrokerFormat.TRADING212_STANDARD);
         createDTO.setFilename("test.csv");
 
         mockMvc.perform(post("/api/import-batches")
