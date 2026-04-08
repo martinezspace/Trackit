@@ -1,21 +1,15 @@
 package com.trackit.investmentservice.service;
 
-import com.trackit.investmentservice.csv.CsvParser;
-import com.trackit.investmentservice.csv.ParsedTransaction;
-import com.trackit.investmentservice.csv.Trading212CsvParser;
 import com.trackit.investmentservice.dto.ImportBatchResponseDTO;
 import com.trackit.investmentservice.exception.ResourceNotFoundException;
 import com.trackit.investmentservice.mapper.ImportBatchMapper;
 import com.trackit.investmentservice.model.*;
 import com.trackit.investmentservice.repository.ImportBatchRepository;
-import com.trackit.investmentservice.repository.InstrumentRepository;
 import com.trackit.investmentservice.repository.InvestmentAccountRepository;
-import com.trackit.investmentservice.repository.InvestmentTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

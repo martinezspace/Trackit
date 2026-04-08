@@ -1,8 +1,9 @@
 package com.trackit.investmentservice.service;
 
 import com.trackit.investmentservice.csv.CsvParser;
+import com.trackit.investmentservice.csv.NationaleNederlandenPpkParser;
 import com.trackit.investmentservice.csv.ParsedTransaction;
-import com.trackit.investmentservice.csv.Trading212CsvParser;
+import com.trackit.investmentservice.csv.Trading212StandardParser;
 import com.trackit.investmentservice.exception.ResourceNotFoundException;
 import com.trackit.investmentservice.model.*;
 import com.trackit.investmentservice.repository.ImportBatchRepository;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,7 +34,8 @@ public class ImportProcessingService {
     private final InstrumentRepository instrumentRepository;
     private final InvestmentTransactionRepository transactionRepository;
     private final HoldingService holdingService;
-    private final Trading212CsvParser trading212CsvParser;
+    private final Trading212StandardParser trading212StandardParser;
+    private final NationaleNederlandenPpkParser nationaleNederlandenPpkParser;
 
     //Runs in background thread - called from ImportService
     //@Async works correctly because it's called outside the class
@@ -47,13 +50,13 @@ public class ImportProcessingService {
 
         try {
             //Download CSV from S3
-            InputStream csvStream = fileStorageService.downloadFile(s3Key);
+            InputStream fileStream = fileStorageService.downloadFile(s3Key);
 
             //Pick correct parser based on broker format
             CsvParser parser = selectParser(brokerFormat);
 
             //Parse CSV => list of raw transactions
-            List<ParsedTransaction> parsedTransactions = parser.parse(csvStream);
+            List<ParsedTransaction> parsedTransactions = parser.parse(fileStream);
             batch.setRowCount(parsedTransactions.size());
 
             //Process each parsed transaction
@@ -100,17 +103,13 @@ public class ImportProcessingService {
     private void processTransaction(ParsedTransaction parsed, ImportBatch batch) {
         //Skip duplicate transactions - same external ID already imported for this account
         UUID accountId = batch.getAccount().getId();
-        if (transactionRepository.existsByAccount_IdAndExternalId(accountId, parsed.getExternalId())) {
+        if (parsed.getExternalId() != null && transactionRepository.existsByAccount_IdAndExternalId(accountId, parsed.getExternalId())) {
             log.debug("Skipping duplicate transaction: {}", parsed.getExternalId());
             return;
         }
 
         //Find or create instrument by ISIN
-        Instrument instrument = instrumentRepository.findByIsin(parsed.getIsin())
-                .orElseGet(() -> createInstrument(parsed));
-
-        //Map transaction type
-        TransactionType transactionType = TransactionType.valueOf(parsed.getTransactionType());
+        Instrument instrument = findOrCreateInstrument(parsed);
 
         //Create and save transaction
         InvestmentTransaction transaction = new InvestmentTransaction();
@@ -118,7 +117,7 @@ public class ImportProcessingService {
         transaction.setBatch(batch);
         transaction.setInstrument(instrument);
         transaction.setExternalId(parsed.getExternalId());
-        transaction.setTransactionType(transactionType);
+        transaction.setTransactionType(TransactionType.valueOf(parsed.getTransactionType()));
         transaction.setQuantity(parsed.getQuantity());
         transaction.setPrice(parsed.getPrice());
         transaction.setAmount(parsed.getAmount());
@@ -129,20 +128,44 @@ public class ImportProcessingService {
         transactionRepository.save(transaction);
     }
 
+    private Instrument findOrCreateInstrument(ParsedTransaction parsed) {
+        //Strategy 1 find by ISIN (stocks, ETFs, bonds)
+        if (parsed.getIsin() != null && !parsed.getIsin().isEmpty()) {
+            Optional<Instrument> existing = instrumentRepository.findByIsin(parsed.getIsin());
+            if (existing.isPresent()) return existing.get();
+        }
+
+        //Strategy 2 - find by name
+        if (parsed.getInstrumentName() != null && !parsed.getInstrumentName().isEmpty()) {
+            Optional<Instrument> existing = instrumentRepository.findByName(parsed.getInstrumentName());
+            if (existing.isPresent()) return existing.get();
+        }
+
+        //Strategy 3 create instrument
+        return createInstrument(parsed);
+    }
+
     private Instrument createInstrument(ParsedTransaction parsed) {
         Instrument instrument = new Instrument();
-        instrument.setIsin(parsed.getIsin());
+
+        if (parsed.getIsin() != null && !parsed.getIsin().isEmpty()) {
+            instrument.setIsin(parsed.getIsin());
+        }
+
         instrument.setTicker(parsed.getTicker());
         instrument.setName(parsed.getInstrumentName());
         instrument.setCurrency(parsed.getCurrency());
-        //Default to stock can be refined later
-        instrument.setInstrumentType(InstrumentType.STOCK);
+        instrument.setInstrumentType(
+                (parsed.getIsin() == null || parsed.getIsin().isEmpty())
+                    ? InstrumentType.FUND : InstrumentType.STOCK
+        );
         return instrumentRepository.save(instrument);
     }
 
     private CsvParser selectParser(BrokerFormat brokerFormat) {
         return switch (brokerFormat) {
-            case TRADING212 -> trading212CsvParser;
+            case TRADING212_STANDARD -> trading212StandardParser;
+            case NATIONALE_NEDERLANDEN_PPK -> nationaleNederlandenPpkParser;
             default -> throw new IllegalArgumentException("Unsupported broker format: " + brokerFormat);
         };
     }

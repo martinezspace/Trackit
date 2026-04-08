@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Trading212CsvParser implements CsvParser {
+public class Trading212StandardParser implements CsvParser {
 
-    private static final Logger log = LoggerFactory.getLogger(Trading212CsvParser.class);
+    private static final Logger log = LoggerFactory.getLogger(Trading212StandardParser.class);
 
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
