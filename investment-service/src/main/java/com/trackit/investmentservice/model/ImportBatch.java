@@ -44,7 +44,7 @@ public class ImportBatch {
     //Which broker format was detected, decideds which parser runs
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "broker_format", nullable = false, length = 20)
+    @Column(name = "broker_format", nullable = false, length = 50)
     private BrokerFormat brokerFormat;
 
     //Lifecycle status of the import

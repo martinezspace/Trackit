@@ -71,7 +71,7 @@ public class ImportProcessingService {
                 } catch (Exception e) {
                     errorCount++;
                     errors.add("Row " + (importedCount + errorCount) + ": " + e.getMessage());
-                    log.warn("Failed to process transaction - externalId: {}, reason: {}", parsed.getExternalId(), e.getMessage());
+                    log.warn("Failed to process transaction - externalId: {}, reason: {}", parsed.getExternalId(), e.getMessage(), e);
                 }
             }
 
@@ -99,7 +99,6 @@ public class ImportProcessingService {
     }
 
     //helper
-    @Transactional
     private void processTransaction(ParsedTransaction parsed, ImportBatch batch) {
         //Skip duplicate transactions - same external ID already imported for this account
         UUID accountId = batch.getAccount().getId();
