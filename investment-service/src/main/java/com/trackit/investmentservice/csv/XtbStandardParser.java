@@ -136,15 +136,9 @@ public class XtbStandardParser implements CsvParser {
         if (!matcher.find()) return null;
 
         String qtyStr = matcher.group(1);
-        String totalQtyStr = matcher.group(2); //present when comment has slash
         String priceStr = matcher.group(3);
 
-        //When theres a slash, use total quantity (after slash)
-        //This represents the full position size for this partial fill
-        BigDecimal quantity = totalQtyStr != null
-                ? new BigDecimal(totalQtyStr)
-                : new BigDecimal(qtyStr);
-
+        BigDecimal quantity = new BigDecimal(qtyStr);
         BigDecimal price = new BigDecimal(priceStr);
 
         return new QuantityPrice(quantity, price);
