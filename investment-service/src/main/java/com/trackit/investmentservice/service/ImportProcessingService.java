@@ -1,9 +1,6 @@
 package com.trackit.investmentservice.service;
 
-import com.trackit.investmentservice.csv.CsvParser;
-import com.trackit.investmentservice.csv.NationaleNederlandenPpkParser;
-import com.trackit.investmentservice.csv.ParsedTransaction;
-import com.trackit.investmentservice.csv.Trading212StandardParser;
+import com.trackit.investmentservice.csv.*;
 import com.trackit.investmentservice.exception.ResourceNotFoundException;
 import com.trackit.investmentservice.model.*;
 import com.trackit.investmentservice.repository.ImportBatchRepository;
@@ -14,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -36,6 +32,7 @@ public class ImportProcessingService {
     private final HoldingService holdingService;
     private final Trading212StandardParser trading212StandardParser;
     private final NationaleNederlandenPpkParser nationaleNederlandenPpkParser;
+    private final XtbStandardParser xtbStandardParser;
 
     //Runs in background thread - called from ImportService
     //@Async works correctly because it's called outside the class
@@ -134,13 +131,19 @@ public class ImportProcessingService {
             if (existing.isPresent()) return existing.get();
         }
 
-        //Strategy 2 - find by name
+        //Strategy 2 - find by ticker (XTB instruments before ISIN enrichment)
+        if (parsed.getTicker() != null && !parsed.getTicker().isEmpty()) {
+            Optional<Instrument> existing = instrumentRepository.findByTicker(parsed.getTicker());
+            if (existing.isPresent()) return existing.get();
+        }
+
+        //Strategy 3 - find by name (PPK funds and instruments without ISIN or ticker)
         if (parsed.getInstrumentName() != null && !parsed.getInstrumentName().isEmpty()) {
             Optional<Instrument> existing = instrumentRepository.findByName(parsed.getInstrumentName());
             if (existing.isPresent()) return existing.get();
         }
 
-        //Strategy 3 create instrument
+        //Strategy 4 create instrument
         return createInstrument(parsed);
     }
 
@@ -154,10 +157,14 @@ public class ImportProcessingService {
         instrument.setTicker(parsed.getTicker());
         instrument.setName(parsed.getInstrumentName());
         instrument.setCurrency(parsed.getCurrency());
-        instrument.setInstrumentType(
-                (parsed.getIsin() == null || parsed.getIsin().isEmpty())
-                    ? InstrumentType.FUND : InstrumentType.STOCK
-        );
+
+        // FUND — no ISIN and no ticker (PPK funds)
+        // STOCK — everything else (Trading212, XTB — ticker present even without ISIN)
+        boolean isPpkFund = (parsed.getIsin() == null || parsed.getIsin().isEmpty())
+                && (parsed.getTicker() == null || parsed.getTicker().isEmpty());
+
+        instrument.setInstrumentType(isPpkFund ? InstrumentType.FUND : InstrumentType.STOCK);
+
         return instrumentRepository.save(instrument);
     }
 
@@ -165,6 +172,7 @@ public class ImportProcessingService {
         return switch (brokerFormat) {
             case TRADING212_STANDARD -> trading212StandardParser;
             case NATIONALE_NEDERLANDEN_PPK -> nationaleNederlandenPpkParser;
+            case XTB_STANDARD -> xtbStandardParser;
             default -> throw new IllegalArgumentException("Unsupported broker format: " + brokerFormat);
         };
     }
