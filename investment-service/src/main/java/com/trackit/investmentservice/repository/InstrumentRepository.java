@@ -3,6 +3,7 @@ package com.trackit.investmentservice.repository;
 import com.trackit.investmentservice.model.Instrument;
 import com.trackit.investmentservice.model.InstrumentType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,4 +28,15 @@ public interface InstrumentRepository extends JpaRepository<Instrument, UUID> {
     boolean existsByIsin(String isin);
     boolean existsByName(String name);
 
+    //All unique non-null tickers - used by /tickers endpoint
+    @Query("SELECT i.ticker FROM Instrument i WHERE i.ticker IS NOT NULL")
+    List<String> findAllTickers();
+
+    //Only tickers with active holdings (quantity > 0)
+    //Used by PriceWorker - no point fetching prices for instruments nobody holds anymore
+    @Query("SELECT DISTINCT i.ticker FROM Instrument i " +
+            "JOIN Holding h ON h.instrument.id = i.id " +
+            "WHERE i.ticker IS NOT NULL " +
+            "AND h.quantity > 0")
+    List<String> findTickersWithActiveHoldings();
 }
