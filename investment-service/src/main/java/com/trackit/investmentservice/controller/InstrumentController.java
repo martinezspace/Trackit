@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -42,6 +43,28 @@ public class InstrumentController {
             @PathVariable String isin
     ) {
         return ResponseEntity.ok(instrumentService.getByIsin(isin));
+    }
+
+    //GET /api/instruments/tickers
+    @Operation(summary = "Get all tickers")
+    @GetMapping("/tickers")
+    public ResponseEntity<List<String>> getAllTickers(
+            @RequestHeader("X-Internal-Key") String internalKey) {
+        if (!internalServiceKey.equals(internalKey)) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(instrumentService.getAllTickers());
+    }
+
+    //GET /api/instruments/tickers/active
+    @Operation(summary = "Get tickers with active holdings - internal use by PriceWorker")
+    @GetMapping("/tickers/active")
+    public ResponseEntity<List<String>> getActiveHoldingTickers(
+            @RequestHeader("X-Internal-Key") String internalKey) {
+        if (!internalServiceKey.equals(internalKey)) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(instrumentService.getActiveHoldingTickers());
     }
 
     //POST /api/instruments
