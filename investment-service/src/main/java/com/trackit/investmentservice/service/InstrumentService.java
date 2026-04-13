@@ -41,6 +41,17 @@ public class InstrumentService {
                 .collect(Collectors.toList());
     }
 
+    //All tickers - returns every instrument that has a ticker
+    public List<String> getAllTickers() {
+        return instrumentRepository.findAllTickers();
+    }
+
+    //Active tickers only - used by PriceWorker to save api calls
+    //Only returns tickers where at least one holding has quantity > 0
+    public List<String> getActiveHoldingTickers() {
+        return instrumentRepository.findTickersWithActiveHoldings();
+    }
+
     //Commands
     public InstrumentResponseDTO createInstrument(InstrumentCreateDTO request) {
         //If ISIN provided - check for duplicates
@@ -75,5 +86,16 @@ public class InstrumentService {
         return instrumentRepository.findByName(request.getName())
                 .map(instrumentMapper::toResponseDTO)
                 .orElseGet(() -> createInstrument(request));
+    }
+
+    //Called by PriceWorker after fetching
+    // if ISIN is returned, and we don't have it yet, we enrich the instrument record
+    public void enrichIsin(String ticker, String isin) {
+        instrumentRepository.findByTicker(ticker).ifPresent(instrument -> {
+            if (instrument.getIsin() == null && isin != null) {
+                instrument.setIsin(isin);
+                instrumentRepository.save(instrument);
+            }
+        });
     }
 }
