@@ -41,17 +41,14 @@ public class InstrumentService {
                 .collect(Collectors.toList());
     }
 
-    //All tickers - returns every instrument that has a ticker
-    public List<String> getAllTickers() {
-        return instrumentRepository.findAllTickers();
+    //Returns InstrumentResponseDTO list, contains both id and ticker
+    //PriceWorker uses: id (to save price) + ticker (to call)
+    public List<InstrumentResponseDTO> getActiveHoldingInstruments() {
+        return instrumentRepository.findInstrumentsWithActiveHoldings()
+                .stream()
+                .map(instrumentMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
-
-    //Active tickers only - used by PriceWorker to save api calls
-    //Only returns tickers where at least one holding has quantity > 0
-    public List<String> getActiveHoldingTickers() {
-        return instrumentRepository.findTickersWithActiveHoldings();
-    }
-
     //Commands
     public InstrumentResponseDTO createInstrument(InstrumentCreateDTO request) {
         //If ISIN provided - check for duplicates

@@ -45,26 +45,15 @@ public class InstrumentController {
         return ResponseEntity.ok(instrumentService.getByIsin(isin));
     }
 
-    //GET /api/instruments/tickers
-    @Operation(summary = "Get all tickers")
-    @GetMapping("/tickers")
-    public ResponseEntity<List<String>> getAllTickers(
+    //GET /api/instruments/active
+    @Operation(summary = "Get instruments with active holdings - internal use by PriceWorker")
+    @GetMapping("/active")
+    public ResponseEntity<List<InstrumentResponseDTO>> getActiveHoldingInstruments(
             @RequestHeader("X-Internal-Key") String internalKey) {
         if (!internalServiceKey.equals(internalKey)) {
             return ResponseEntity.status(403).build();
         }
-        return ResponseEntity.ok(instrumentService.getAllTickers());
-    }
-
-    //GET /api/instruments/tickers/active
-    @Operation(summary = "Get tickers with active holdings - internal use by PriceWorker")
-    @GetMapping("/tickers/active")
-    public ResponseEntity<List<String>> getActiveHoldingTickers(
-            @RequestHeader("X-Internal-Key") String internalKey) {
-        if (!internalServiceKey.equals(internalKey)) {
-            return ResponseEntity.status(403).build();
-        }
-        return ResponseEntity.ok(instrumentService.getActiveHoldingTickers());
+        return ResponseEntity.ok(instrumentService.getActiveHoldingInstruments());
     }
 
     //POST /api/instruments
