@@ -65,6 +65,11 @@ public class PriceHistoryService {
                     .orElseThrow();
         }
 
+        //Use currency from request if provided, otherwise fall back to instrument currency
+        if (request.getCurrency() == null || request.getCurrency().isEmpty()) {
+            request.setCurrency(instrument.getCurrency());
+        }
+
         //Save new price
         PriceHistory saved = priceHistoryRepository.save(priceHistoryMapper.toEntity(request, instrument));
 

@@ -27,8 +27,9 @@ public class PriceHistoryCreateDTO {
     @NotNull(message = "Close price is required")
     private BigDecimal closePrice;
 
-    @NotBlank(message = "Currency is required")
-    @Pattern(regexp = "^[A-Z]{3}$", message = "Currency must be a valid 3-letter ISO code")
+    //Optional if not provided, InvestmentService reads currency from instrument
+    //PriceWorker doesn't know currency, it only knows ticker and price
+    @Size(max = 3)
     private String currency;
 
     //Which price provider this came from
