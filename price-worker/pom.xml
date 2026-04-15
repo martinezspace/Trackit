@@ -7,6 +7,31 @@
     <groupId>com.trackit</groupId>
     <artifactId>price-worker</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-    
+    <dependencies>
+        <!-- AWS Lambda runtime - provides requestHandler interface -->
+        <!-- SAM CLI uses the same interface locally as AWS Lambda in prod -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <!-- AWS Lambda events - provides SechduledEvent triggered by EventBridge -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>3.11.4</version>
+        </dependency>
+
+        <!-- Jackson - JSON serialisation for API responses -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.18.2</version>
+        </dependency>
+    </dependencies>
+
+    <build></build>
 </project>
