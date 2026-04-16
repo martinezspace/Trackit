@@ -1,0 +1,13 @@
+{
+  "version": "0",
+  "id": "53dc4d37-cffa-4f76-80c9-8b7d4a4d2efd",
+  "detail-type": "Scheduled Event",
+  "source": "aws.events",
+  "account": "123456789012",
+  "time": "2024-01-15T18:00:00Z",
+  "region": "eu-central-1",
+  "resources": [
+    "arn:aws:events:eu-central-1:123456789012:rule/trackit-price-worker-schedule"
+  ],
+  "detail": {}
+}

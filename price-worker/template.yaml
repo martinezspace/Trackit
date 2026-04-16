@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: TrackIt PriceWorker Lambda
+
+globals:
+  Function:
+    Timeout: 300
+    MemorySize: 256
+
+Resources:
+  PriceWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: trackit-price-worker
+      Handler: com.trackit.priceworker.PriceWorkerHandler::handleRequest
+      Runtime: java21
+      CodeUri: target/price-worker-1.0-SNAPSHOT.jar
+      Environment:
+        Variables:
+          ALPHA_VANTAGE_API_KEY: demo
+          INVESTMENT_SERVICE_URL: http://host.docker.internal:8080
+          INTERNAL_SERVICE_KEY: internal-service-key
+      Events:
+        ScheduledPriceUpdate:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 16 ? * MON-FRI *)
+            Description: Update prices on weekdays at 18:00 Warsaw time
+            Enabled: true
