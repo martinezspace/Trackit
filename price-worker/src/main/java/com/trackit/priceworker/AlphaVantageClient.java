@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public class AlphaVantageClient {
 
@@ -22,15 +24,23 @@ public class AlphaVantageClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    //Returns latest price for ticker, null on any error
-    //Null means caller skips this ticker and logs a warning
+    // Returns latest price for ticker, null on any error
     public Double getLatestPrice(String ticker) {
         try {
             String symbol = normaliseSymbol(ticker);
+
+            if (symbol.isEmpty()) {
+                System.out.println("Invalid symbol after normalization: " + ticker);
+                return null;
+            }
+
             String url = BASE_URL +
                     "?function=GLOBAL_QUOTE" +
-                    "&symbol=" + symbol +
+                    "&symbol=" + URLEncoder.encode(symbol, StandardCharsets.UTF_8) +
                     "&apikey=" + apiKey;
+
+            System.out.println("Fetching price for: " + ticker + " -> " + symbol);
+            System.out.println("Request URL: " + url);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -40,36 +50,56 @@ public class AlphaVantageClient {
             HttpResponse<String> response = httpClient.send(
                     request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() != 200) return null;
+            if (response.statusCode() != 200) {
+                System.out.println("Non-200 response: " + response.statusCode());
+                return null;
+            }
 
-            JsonNode root = objectMapper.readTree(response.body());
+            String body = response.body();
+            System.out.println("Response body: " + body);
 
-            //Rate limited or daily quota exceeded
-            if (root.has("Information") || root.has("Note")) return null;
+            JsonNode root = objectMapper.readTree(body);
+
+            // Rate limit / API messages
+            if (root.has("Information") || root.has("Note")) {
+                System.out.println("Alpha Vantage limit hit or info message returned.");
+                return null;
+            }
 
             JsonNode quote = root.path("Global Quote");
-            if (quote.isMissingNode() || quote.isEmpty()) return null;
+            if (quote.isMissingNode() || quote.isEmpty()) {
+                System.out.println("Empty Global Quote for: " + symbol);
+                return null;
+            }
 
             String priceStr = quote.path("05. price").asText();
-            if (priceStr.isEmpty() || priceStr.equals("null")) return null;
+            if (priceStr == null || priceStr.isEmpty() || priceStr.equalsIgnoreCase("null")) {
+                System.out.println("Price missing in response for: " + symbol);
+                return null;
+            }
 
             return Double.parseDouble(priceStr);
 
         } catch (Exception e) {
+            System.out.println("Error fetching price for: " + ticker);
+            e.printStackTrace();
             return null;
         }
     }
 
-
-    //Normalises XTB ticker formats to Alpha Vantage format
+    // Normalises XTB ticker formats to something Alpha Vantage *might* understand
     private String normaliseSymbol(String ticker) {
         if (ticker == null || ticker.isEmpty()) return "";
+
+        ticker = ticker.trim().toUpperCase();
+
         if (ticker.endsWith(".US")) return ticker.replace(".US", "");
-        if (ticker.endsWith(".DE")) return ticker.replace(".DE", "DEX");
-        if (ticker.endsWith(".FR")) return ticker.replace(".FR", "PAR");
-        if (ticker.endsWith(".NL")) return ticker.replace(".NL", "AMS");
-        if (ticker.endsWith(".DK")) return ticker.replace(".DK", "CPH");
-        if (ticker.endsWith(".ES")) return ticker.replace(".ES", "BME");
+        if (ticker.endsWith(".DE")) return ticker;
+        if (ticker.endsWith(".FR")) return ticker.replace(".FR", ".PA"); // Paris
+        if (ticker.endsWith(".NL")) return ticker.replace(".NL", ".AS"); // Amsterdam
+        if (ticker.endsWith(".DK")) return ticker.replace(".DK", ".CO"); // Copenhagen
+        if (ticker.endsWith(".ES")) return ticker.replace(".ES", ".MC"); // Madrid
+
         return ticker;
     }
 }
