@@ -1,10 +1,10 @@
-package com.trackit.investmentservice;
+package com.trackit.bankaccountservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class InvestmentServiceApplicationTests {
+class BankAccountServiceApplicationTests {
 
     @Test
     void contextLoads() {

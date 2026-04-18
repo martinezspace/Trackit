@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>com.trackit</groupId>
-    <artifactId>investment-service</artifactId>
+    <artifactId>bank-account-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>investment-service</name>
-    <description>investment-service</description>
+    <name>bank-account-service</name>
+    <description>bank-account-service</description>
     <url/>
     <licenses>
         <license/>
@@ -47,18 +47,6 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-        </dependency>
-
-        <!-- Apache POI - read .xls and .xlsx files -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>5.2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.5</version>
         </dependency>
 
         <dependency>
@@ -122,5 +110,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
