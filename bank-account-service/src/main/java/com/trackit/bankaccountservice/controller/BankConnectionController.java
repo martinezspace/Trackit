@@ -62,7 +62,7 @@ public class BankConnectionController {
     }
 
     //DELETE /api/bank-connections/{id}
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete specific Bank Connection")
     public ResponseEntity<Void> deleteConnection(
             @PathVariable UUID id,
