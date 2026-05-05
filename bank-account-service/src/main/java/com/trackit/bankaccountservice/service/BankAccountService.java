@@ -68,7 +68,7 @@ public class BankAccountService {
         return accountMapper.toResponseDTO(accountRepository.save(account));
     }
 
-    public void deactiveAccount(UUID id, UUID userId) {
+    public void deactivateAccount(UUID id, UUID userId) {
         BankAccount existing = accountRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
         //Soft delete - preserve transaction history

@@ -78,7 +78,7 @@ public class BankAccountController {
     public ResponseEntity<Void> deactiveAccount(
             @PathVariable UUID id,
             @RequestHeader("X-User-Id") UUID userId) {
-        service.deactiveAccount(id, userId);
+        service.deactivateAccount(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

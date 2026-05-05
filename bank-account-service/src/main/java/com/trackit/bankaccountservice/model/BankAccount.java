@@ -62,7 +62,6 @@ public class BankAccount {
     @Column(name = "currency", nullable = false, length = 3)
     private String currency;
 
-    @Size(max = 20)
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", length = 20)
     private AccountType accountType;
