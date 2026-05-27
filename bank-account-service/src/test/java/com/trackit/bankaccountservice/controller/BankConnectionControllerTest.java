@@ -52,8 +52,8 @@ public class BankConnectionControllerTest {
 
         testResponseDTO = new BankConnectionResponseDTO();
         testResponseDTO.setId(connectionId.toString());
-        testResponseDTO.setInstitutionId("MONZO_MONZGB2L");
-        testResponseDTO.setInstitutionName("Monzo");
+        testResponseDTO.setInstitutionId("SANDBOXFINANCE_SFIN0000");
+        testResponseDTO.setInstitutionName("Sandbox Finance");
         testResponseDTO.setStatus("ACTIVE");
     }
 
@@ -67,7 +67,7 @@ public class BankConnectionControllerTest {
         mockMvc.perform(get("/api/bank-connections")
                         .header("X-User-Id", userId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].institutionId").value("MONZO_MONZGB2L"))
+                .andExpect(jsonPath("$[0].institutionId").value("SANDBOXFINANCE_SFIN0000"))
                 .andExpect(jsonPath("$[0].status").value("ACTIVE"));
     }
 
@@ -92,7 +92,7 @@ public class BankConnectionControllerTest {
         mockMvc.perform(get("/api/bank-connections/{id}", connectionId)
                         .header("X-User-Id", userId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.institutionId").value("MONZO_MONZGB2L"))
+                .andExpect(jsonPath("$.institutionId").value("SANDBOXFINANCE_SFIN0000"))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
@@ -111,9 +111,8 @@ public class BankConnectionControllerTest {
     @Test
     public void createConnection_returns201_withCreatedDTO() throws Exception {
         BankConnectionCreateDTO createDTO = new BankConnectionCreateDTO();
-        createDTO.setInstitutionId("MONZO_MONZGB2L");
-        createDTO.setInstitutionName("Monzo");
-        createDTO.setRequisitionId("req-monzo-001");
+        createDTO.setInstitutionId("SANDBOXFINANCE_SFIN0000");
+        createDTO.setInstitutionName("Sandbox Finance");
 
         when(bankConnectionService.createConnection(eq(userId), any(BankConnectionCreateDTO.class)))
                 .thenReturn(testResponseDTO);
@@ -123,15 +122,14 @@ public class BankConnectionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.institutionId").value("MONZO_MONZGB2L"))
+                .andExpect(jsonPath("$.institutionId").value("SANDBOXFINANCE_SFIN0000"))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test
     public void createConnection_returns422_whenInstitutionIdMissing() throws Exception {
         BankConnectionCreateDTO createDTO = new BankConnectionCreateDTO();
-        createDTO.setInstitutionName("Monzo");
-        createDTO.setRequisitionId("req-monzo-001");
+        createDTO.setInstitutionName("Sandbox Finance");
         // institutionId intentionally missing - should fail @NotBlank validation
 
         mockMvc.perform(post("/api/bank-connections")
@@ -143,18 +141,17 @@ public class BankConnectionControllerTest {
     }
 
     @Test
-    public void createConnection_returns422_whenRequisitionIdMissing() throws Exception {
+    public void createConnection_returns422_whenInstitutionNameMissing() throws Exception {
         BankConnectionCreateDTO createDTO = new BankConnectionCreateDTO();
-        createDTO.setInstitutionId("MONZO_MONZGB2L");
-        createDTO.setInstitutionName("Monzo");
-        // requisitionId intentionally missing
+        createDTO.setInstitutionId("SANDBOXFINANCE_SFIN0000");
+        // institutionName intentionally missing - should fail @NotBlank validation
 
         mockMvc.perform(post("/api/bank-connections")
                         .header("X-User-Id", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.errors.requisitionId").exists());
+                .andExpect(jsonPath("$.errors.institutionName").exists());
     }
 
     // PATCH /api/bank-connections/{id}

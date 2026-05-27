@@ -25,7 +25,8 @@ public class BankConnectionMapper {
         response.setUserId(connection.getUserId().toString());
         response.setInstitutionId(connection.getInstitutionId());
         response.setInstitutionName(connection.getInstitutionName());
-        response.setRequisitionId(connection.getRequisitionId());
+        response.setTinkUserId(connection.getTinkUserId());
+        response.setCredentialsId(connection.getCredentialsId());
         response.setStatus(connection.getStatus().name());
         response.setExpiresAt(connection.getExpiresAt() != null
                 ? connection.getExpiresAt().format(DATE_FORMAT) : null);
@@ -39,12 +40,12 @@ public class BankConnectionMapper {
     }
 
     //CreateDTO => Entity
+    //tinkUserId and credentialsId are set internally by TinkService after auth — not provided by client
     public BankConnection toEntity(BankConnectionCreateDTO request, UUID userId) {
         BankConnection connection = new BankConnection();
         connection.setUserId(userId);
         connection.setInstitutionId(request.getInstitutionId());
         connection.setInstitutionName(request.getInstitutionName());
-        connection.setRequisitionId(request.getRequisitionId());
         connection.setStatus(ConnectionStatus.PENDING);
         return connection;
     }

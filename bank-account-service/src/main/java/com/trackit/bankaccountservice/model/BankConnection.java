@@ -30,10 +30,9 @@ public class BankConnection {
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    //GoCardless institution identifier
     @NotNull
     @Size(max = 100)
-    @Column(name = "institution_id",nullable = false, length = 100)
+    @Column(name = "institution_id", nullable = false, length = 100)
     private String institutionId;
 
     @NotBlank
@@ -41,19 +40,22 @@ public class BankConnection {
     @Column(name = "institution_name", nullable = false)
     private String institutionName;
 
-    //GoCardless requisition ID - used to correlate webhook callsback from the provider
-    @NotNull
+    // Tink user ID for this end-user — set once on first connection, reused for subsequent ones
     @Size(max = 255)
-    @Column(name = "requisition_id", nullable = false)
-    private String requisitionId;
+    @Column(name = "tink_user_id", length = 255)
+    private String tinkUserId;
+
+    // Tink credentials ID — identifies the bank connection, set after user completes auth
+    @Size(max = 255)
+    @Column(name = "credentials_id", length = 255)
+    private String credentialsId;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private ConnectionStatus status;
 
-    //Set from GoCardless response, bank consent typically expires after 90 days
-    //Used to proactively warn users before their connection stops working
+    // Bank consent typically expires after 90 days — used to warn users proactively
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 

@@ -12,7 +12,8 @@ public class BankConnectionResponseDTO {
     private String userId;
     private String institutionId;
     private String institutionName;
-    private String requisitionId;
+    private String tinkUserId;
+    private String credentialsId;
     private String status;
     private String expiresAt;       //null if not yet set by provider
     private String lastSyncedAt;    //null if never synced

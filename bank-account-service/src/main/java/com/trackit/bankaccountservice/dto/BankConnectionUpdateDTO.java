@@ -9,12 +9,10 @@ import lombok.Setter;
 public class BankConnectionUpdateDTO {
 
     //All fields nullable - only provided fields are applied in the service
-    //Primary use case is status transitions driven by GoCardless webhook events
+    //Primary use case: status transitions driven by Tink webhook events
 
-    //Updated when GoCardless webhook confirms authorization (PENDING => ACTIVE)
-    //or when we detect expirt/errors during sync
+    //Transitions: PENDING => ACTIVE (webhook), ACTIVE => EXPIRED/REVOKED/ERROR (sync or webhook)
     private ConnectionStatus status;
 
-    //Received as String from GoCardless webhook
     private String expiresAt;
 }

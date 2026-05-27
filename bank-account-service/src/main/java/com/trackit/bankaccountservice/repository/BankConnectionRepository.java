@@ -18,6 +18,12 @@ public interface BankConnectionRepository extends JpaRepository<BankConnection, 
     //Ownership check - always verify account belongs to this user before operation
     Optional<BankConnection> findByIdAndUserId(UUID id, UUID userId);
 
-    // Webhook lookup - GoCardless identifies callbacks by requisitionId, not our internal ID
-    Optional<BankConnection> findByRequisitionId(String requisitionId);
+    // Webhook/callback lookup — Tink identifies callbacks by credentialsId
+    Optional<BankConnection> findByCredentialsId(String credentialsId);
+
+    // Used by TinkUserService to check if a Tink user already exists for this user
+    Optional<BankConnection> findFirstByUserId(UUID userId);
+
+    // Used by scheduler to sync all active connections
+    List<BankConnection> findByStatus(ConnectionStatus status);
 }
