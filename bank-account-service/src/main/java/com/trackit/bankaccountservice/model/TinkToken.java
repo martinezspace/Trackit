@@ -9,6 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+// Single-row table — one stored client credentials token for the whole system
+// Client credentials flow does not issue refresh tokens; we simply re-obtain when expired
 @NoArgsConstructor
 @Getter
 @Setter
@@ -24,14 +26,8 @@ public class TinkToken {
     @Column(name = "access_token", nullable = false, columnDefinition = "TEXT")
     private String accessToken;
 
-    @Column(name = "refresh_token", nullable = false, columnDefinition = "TEXT")
-    private String refreshToken;
-
     @Column(name = "access_expires_at", nullable = false)
     private LocalDateTime accessExpiresAt;
-
-    @Column(name = "refresh_expires_at", nullable = false)
-    private LocalDateTime refreshExpiresAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
