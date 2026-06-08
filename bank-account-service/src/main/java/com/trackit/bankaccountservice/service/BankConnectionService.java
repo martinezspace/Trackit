@@ -6,6 +6,7 @@ import com.trackit.bankaccountservice.dto.BankConnectionUpdateDTO;
 import com.trackit.bankaccountservice.exception.ResourceNotFoundException;
 import com.trackit.bankaccountservice.mapper.BankConnectionMapper;
 import com.trackit.bankaccountservice.model.BankConnection;
+import com.trackit.bankaccountservice.model.ConnectionStatus;
 import com.trackit.bankaccountservice.repository.BankConnectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,21 @@ public class BankConnectionService {
         BankConnection existing = bankConnectionRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Connection not found: " + id));
         bankConnectionRepository.delete(existing);
+    }
+
+    public void setTinkUserId(UUID connectionId, UUID userId, String tinkUserId) {
+        BankConnection connection = bankConnectionRepository.findByIdAndUserId(connectionId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Connection not found: " + connectionId));
+        connection.setTinkUserId(tinkUserId);
+        bankConnectionRepository.save(connection);
+    }
+
+    //Used in Tink callback — connectionId from our own state param, userId resolved from entity
+    public BankConnectionResponseDTO activateWithCredentials(UUID connectionId, String credentialsId) {
+        BankConnection connection = bankConnectionRepository.findById(connectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Connection not found: " + connectionId));
+        connection.setCredentialsId(credentialsId);
+        connection.setStatus(ConnectionStatus.ACTIVE);
+        return bankConnectionMapper.toResponseDTO(bankConnectionRepository.save(connection));
     }
 }

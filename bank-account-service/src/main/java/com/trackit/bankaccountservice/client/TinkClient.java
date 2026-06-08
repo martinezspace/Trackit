@@ -75,13 +75,15 @@ public class TinkClient {
     }
 
     //Builds the URL the user must visit to authenticate with their bank
-    public String buildLinkUrl(String authorizationCode) {
+    //state = our connectionId, echoed back in the callback so we can match the redirect
+    public String buildLinkUrl(String authorizationCode, String state) {
         return UriComponentsBuilder.fromUriString(TINK_LINK_BASE)
                 .queryParam("client_id", config.getClientId())
                 .queryParam("redirect_uri", config.getRedirectUri())
                 .queryParam("authorization_code", authorizationCode)
                 .queryParam("market", "PL")
                 .queryParam("locale", "en_US")
+                .queryParam("state", state)
                 .toUriString();
     }
 
