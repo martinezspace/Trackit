@@ -2,11 +2,10 @@ package com.trackit.bankaccountservice.client;
 
 import com.trackit.bankaccountservice.config.TinkConfig;
 import com.trackit.bankaccountservice.dto.tink.*;
+import com.trackit.bankaccountservice.service.TinkTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -77,7 +76,7 @@ public class TinkClient {
 
     //Builds the URL the user must visit to authenticate with their bank
     public String buildLinkUrl(String authorizationCode) {
-        return UriComponentsBuilder.fromHttpUrl(TINK_LINK_BASE)
+        return UriComponentsBuilder.fromUriString(TINK_LINK_BASE)
                 .queryParam("client_id", config.getClientId())
                 .queryParam("redirect_uri", config.getRedirectUri())
                 .queryParam("authorization_code", authorizationCode)
@@ -89,12 +88,12 @@ public class TinkClient {
     // --- Data fetching (requires user access token) ---
 
     public List<TinkAccountDTO> getAccounts(String userAccessToken) {
-        return tinkRestClient.get()
+        TinkAccountListDTO response = tinkRestClient.get()
                 .uri("/data/v2/accounts")
                 .header("Authorization", "Bearer " + userAccessToken)
                 .retrieve()
-                .body(TinkAccountListDTO.class)
-                .getAccounts();
+                .body(TinkAccountListDTO.class);
+        return response != null && response.getAccounts() != null ? response.getAccounts() : List.of();
     }
 
     //Fetches all transaction pages for an account from a given date — handles cursor pagination

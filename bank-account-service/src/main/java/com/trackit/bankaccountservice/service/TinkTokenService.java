@@ -1,4 +1,4 @@
-package com.trackit.bankaccountservice.client;
+package com.trackit.bankaccountservice.service;
 
 import com.trackit.bankaccountservice.config.TinkConfig;
 import com.trackit.bankaccountservice.dto.tink.TinkTokenResponseDTO;
