@@ -39,7 +39,7 @@ public class BankAccountRepositoryTest {
         connection.setUserId(userId);
         connection.setInstitutionId("MONZO_GB");
         connection.setInstitutionName("Monzo");
-        connection.setRequisitionId("req-monzo-001");
+        connection.setCredentialsId("req-monzo-001");
         connection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(connection);
 
@@ -67,7 +67,7 @@ public class BankAccountRepositoryTest {
         otherConnection.setUserId(otherUserId);
         otherConnection.setInstitutionId("ING_PL");
         otherConnection.setInstitutionName("ING Bank");
-        otherConnection.setRequisitionId("req-ing-001");
+        otherConnection.setCredentialsId("req-ing-001");
         otherConnection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(otherConnection);
 

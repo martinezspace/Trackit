@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface TinkTokenRepository extends JpaRepository<TinkToken, UUID> {
 
     // Single-row table — always retrieve the one stored token
-    Optional<TinkToken> findFirst();
+    Optional<TinkToken> findFirstBy();
 }

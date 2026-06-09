@@ -44,7 +44,7 @@ public class TransactionRepositoryTest {
         conn.setUserId(userId);
         conn.setInstitutionId("MONZO_GB");
         conn.setInstitutionName("Monzo");
-        conn.setRequisitionId("req-monzo-001");
+        conn.setCredentialsId("req-monzo-001");
         conn.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(conn);
 
@@ -96,7 +96,7 @@ public class TransactionRepositoryTest {
         otherConn.setUserId(otherUserId);
         otherConn.setInstitutionId("ING_PL");
         otherConn.setInstitutionName("ING");
-        otherConn.setRequisitionId("req-ing-001");
+        otherConn.setCredentialsId("req-ing-001");
         otherConn.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(otherConn);
 

@@ -38,7 +38,7 @@ public class BankConnectionRepositoryTest {
         activeConnection.setUserId(userId);
         activeConnection.setInstitutionId("MONZO_MONZGB2L");
         activeConnection.setInstitutionName("Monzo");
-        activeConnection.setRequisitionId("req-monzo-001");
+        activeConnection.setCredentialsId("req-monzo-001");
         activeConnection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(activeConnection);
 
@@ -46,7 +46,7 @@ public class BankConnectionRepositoryTest {
         expiredConnection.setUserId(userId);
         expiredConnection.setInstitutionId("ING_PL");
         expiredConnection.setInstitutionName("ING Bank");
-        expiredConnection.setRequisitionId("req-ing-001");
+        expiredConnection.setCredentialsId("req-ing-001");
         expiredConnection.setStatus(ConnectionStatus.EXPIRED);
         bankConnectionRepository.save(expiredConnection);
 
@@ -55,7 +55,7 @@ public class BankConnectionRepositoryTest {
         otherUserConnection.setUserId(otherUserId);
         otherUserConnection.setInstitutionId("PKO_PL");
         otherUserConnection.setInstitutionName("PKO BP");
-        otherUserConnection.setRequisitionId("req-pko-001");
+        otherUserConnection.setCredentialsId("req-pko-001");
         otherUserConnection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(otherUserConnection);
     }
@@ -111,21 +111,21 @@ public class BankConnectionRepositoryTest {
         assertThat(result).isEmpty();
     }
 
-    // findByRequisitionId
+    // findByCredentialsId
 
     @Test
-    public void findByRequisitionId_returnsConnection_whenExists() {
+    public void findByCredentialsId_returnsConnection_whenExists() {
         Optional<BankConnection> result = bankConnectionRepository
-                .findByRequisitionId("req-monzo-001");
+                .findByCredentialsId("req-monzo-001");
 
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo(activeConnection.getId());
     }
 
     @Test
-    public void findByRequisitionId_returnsEmpty_whenNotFound() {
+    public void findByCredentialsId_returnsEmpty_whenNotFound() {
         Optional<BankConnection> result = bankConnectionRepository
-                .findByRequisitionId("req-nonexistent");
+                .findByCredentialsId("req-nonexistent");
 
         assertThat(result).isEmpty();
     }
@@ -138,7 +138,7 @@ public class BankConnectionRepositoryTest {
         connection.setUserId(userId);
         connection.setInstitutionId("PEKAO_PL");
         connection.setInstitutionName("Pekao SA");
-        connection.setRequisitionId("req-pekao-001");
+        connection.setCredentialsId("req-pekao-001");
         connection.setStatus(ConnectionStatus.PENDING);
         connection.setExpiresAt(LocalDateTime.now().plusDays(90));
         bankConnectionRepository.save(connection);

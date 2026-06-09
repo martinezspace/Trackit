@@ -28,7 +28,7 @@ public class TinkTokenService {
     private final RestClient tinkRestClient;
 
     public String getClientAccessToken() {
-        return tokenRepository.findFirst()
+        return tokenRepository.findFirstBy()
                 .filter(t -> !isAboutToExpire(t.getAccessExpiresAt()))
                 .map(TinkToken::getAccessToken)
                 .orElseGet(() -> obtainAndStore().getAccessToken());
@@ -66,7 +66,7 @@ public class TinkTokenService {
                 .body(TinkTokenResponseDTO.class);
 
         //Upsert — always only one row in tink_tokens
-        TinkToken token = tokenRepository.findFirst().orElse(new TinkToken());
+        TinkToken token = tokenRepository.findFirstBy().orElse(new TinkToken());
         token.setAccessToken(response.getAccessToken());
         token.setAccessExpiresAt(LocalDateTime.now().plusSeconds(response.getExpiresIn()));
 

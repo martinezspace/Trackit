@@ -39,7 +39,7 @@ public class SyncLogRepositoryTest {
         connection.setUserId(userId);
         connection.setInstitutionId("MONZO_GB");
         connection.setInstitutionName("Monzo");
-        connection.setRequisitionId("req-monzo-001");
+        connection.setCredentialsId("req-monzo-001");
         connection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(connection);
 
@@ -47,7 +47,7 @@ public class SyncLogRepositoryTest {
         otherConnection.setUserId(UUID.randomUUID());
         otherConnection.setInstitutionId("ING_PL");
         otherConnection.setInstitutionName("ING");
-        otherConnection.setRequisitionId("req-ing-001");
+        otherConnection.setCredentialsId("req-ing-001");
         otherConnection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(otherConnection);
 
@@ -102,7 +102,7 @@ public class SyncLogRepositoryTest {
         emptyConnection.setUserId(UUID.randomUUID());
         emptyConnection.setInstitutionId("PEKAO_PL");
         emptyConnection.setInstitutionName("Pekao");
-        emptyConnection.setRequisitionId("req-pekao-001");
+        emptyConnection.setCredentialsId("req-pekao-001");
         emptyConnection.setStatus(ConnectionStatus.ACTIVE);
         bankConnectionRepository.save(emptyConnection);
 

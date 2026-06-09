@@ -50,7 +50,7 @@ public class BankConnectionServiceTest {
         testConnection.setUserId(userId);
         testConnection.setInstitutionId("MONZO_MONZGB2L");
         testConnection.setInstitutionName("Monzo");
-        testConnection.setRequisitionId("req-monzo-001");
+        testConnection.setCredentialsId("cred-monzo-001");
         testConnection.setStatus(ConnectionStatus.ACTIVE);
 
         // Build reusable test response DTO
@@ -129,7 +129,6 @@ public class BankConnectionServiceTest {
         BankConnectionCreateDTO createDTO = new BankConnectionCreateDTO();
         createDTO.setInstitutionId("MONZO_MONZGB2L");
         createDTO.setInstitutionName("Monzo");
-        createDTO.setRequisitionId("req-monzo-001");
 
         when(bankConnectionMapper.toEntity(createDTO, userId)).thenReturn(testConnection);
         when(bankConnectionRepository.save(testConnection)).thenReturn(testConnection);
@@ -146,7 +145,6 @@ public class BankConnectionServiceTest {
         BankConnectionCreateDTO createDTO = new BankConnectionCreateDTO();
         createDTO.setInstitutionId("MONZO_MONZGB2L");
         createDTO.setInstitutionName("Monzo");
-        createDTO.setRequisitionId("req-monzo-001");
 
         when(bankConnectionMapper.toEntity(createDTO, userId)).thenReturn(testConnection);
         when(bankConnectionRepository.save(testConnection)).thenReturn(testConnection);
