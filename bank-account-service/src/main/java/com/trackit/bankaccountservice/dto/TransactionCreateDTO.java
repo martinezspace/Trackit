@@ -44,7 +44,7 @@ public class TransactionCreateDTO {
     // Nullable - can be categorized later
     private UUID categoryId;
 
-    // Null for GoCardless imports - set for deduplication during import
+    // Null for manual transactions - set for deduplication during Tink import
     private String externalId;
 
     // True when user is creating this transaction manually

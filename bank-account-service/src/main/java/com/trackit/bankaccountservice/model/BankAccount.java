@@ -25,7 +25,7 @@ public class BankAccount {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-    //The GoCardless connection this account was imported through
+    //The Tink connection this account was imported through
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "connection_id", nullable = false, updatable = false)
@@ -36,7 +36,7 @@ public class BankAccount {
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    //GoCardless account ID - used to fetch transaction from their api
+    //Tink account ID - used to fetch transactions from their API
     @NotNull
     @Column(name = "external_account_id", nullable = false, updatable = false)
     private String externalAccountId;
@@ -66,7 +66,7 @@ public class BankAccount {
     @Column(name = "account_type", length = 20)
     private AccountType accountType;
 
-    //Last known balance fetched from GoCardless - not real-time
+    //Last known balance fetched from Tink - not real-time
     @Column(name = "current_balance", precision = 15, scale = 2)
     private BigDecimal currentBalance;
 

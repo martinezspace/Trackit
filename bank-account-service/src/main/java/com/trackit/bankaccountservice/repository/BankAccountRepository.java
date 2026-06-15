@@ -20,6 +20,6 @@ public interface BankAccountRepository  extends JpaRepository<BankAccount, UUID>
     //Ownership check - always verify account belongs to this user before any operation
     Optional<BankAccount> findByIdAndUserId(UUID id, UUID userId);
 
-    //Idempotency check during import - prevents duplicate accounts from GoCardless
+    //Idempotency check during import - prevents duplicate accounts from Tink
     Optional<BankAccount> findByConnectionIdAndExternalAccountId(UUID connectionId, String externalAccountId);
 }

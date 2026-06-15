@@ -38,7 +38,7 @@ public class SyncLog {
     @Column(nullable = false, length = 20)
     private SyncStatus status;
 
-    // Total transactions returned by GoCardless for this sync window
+    // Total transactions returned by Tink for this sync window
     @Column(name = "transactions_fetched", nullable = false)
     private int transactionsFetched = 0;
 

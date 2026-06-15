@@ -32,7 +32,7 @@ public class Transaction {
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    // GoCardless transaction ID - used for idempotent import, prevents duplicates
+    // Tink transaction ID - used for idempotent import, prevents duplicates
     // Null for manually created transactions
     @Column(name = "external_id")
     private String externalId;
@@ -74,7 +74,7 @@ public class Transaction {
     @Column(name = "categorization_status", nullable = false, length = 20)
     private CategorizationStatus categorizationStatus = CategorizationStatus.UNCATEGORIZED;
 
-    // True for transactions created by the user manually, not imported from GoCardless
+    // True for transactions created by the user manually, not imported from Tink
     // Manual transactions can be deleted; imported ones cannot
     @Column(name = "is_manual", nullable = false)
     private boolean manual = false;

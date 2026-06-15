@@ -9,6 +9,7 @@ import com.trackit.bankaccountservice.dto.tink.TinkGrantResponseDTO;
 import com.trackit.bankaccountservice.dto.tink.TinkProviderDTO;
 import com.trackit.bankaccountservice.dto.tink.TinkWebhookEventDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trackit.bankaccountservice.model.BankConnection;
 import com.trackit.bankaccountservice.model.ConnectionStatus;
 import com.trackit.bankaccountservice.model.SyncTrigger;
 import com.trackit.bankaccountservice.repository.BankConnectionRepository;
@@ -61,8 +62,8 @@ public class TinkController {
 
         //Reuse existing Tink user if one already exists for this user
         String tinkUserId = connectionRepository.findFirstByUserId(userId)
-                .map(c -> c.getTinkUserId())
-                .filter(id -> id != null && !id.isBlank())
+                .map(BankConnection::getTinkUserId)
+                .filter(id -> !id.isBlank())
                 .orElseGet(() -> tinkClient.createUser(userId.toString()).getUserId());
 
         BankConnectionResponseDTO connection = connectionService.createConnection(userId, request);
@@ -85,7 +86,6 @@ public class TinkController {
     @GetMapping("/callback")
     @Operation(summary = "Tink OAuth callback — activates connection and triggers initial sync")
     public ResponseEntity<Map<String, String>> callback(
-            @RequestParam String code,
             @RequestParam String credentialsId,
             @RequestParam String state) {
 

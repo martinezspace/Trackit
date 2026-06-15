@@ -190,7 +190,6 @@ public class TinkControllerTest {
                 .thenReturn(testConnectionResponse);
 
         mockMvc.perform(get("/api/tink/callback")
-                        .param("code", "some-code")
                         .param("credentialsId", "cred-123")
                         .param("state", connectionId.toString()))
                 .andExpect(status().isOk())

@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/bank-connections/{connectionId}/syncs")
-@Tag(name = "Sync Log", description = "API for managing GoCardless sync operations")
+@Tag(name = "Sync Log", description = "API for managing Tink sync operations")
 public class SyncLogController {
 
     private final SyncLogService service;
@@ -46,7 +46,7 @@ public class SyncLogController {
 
     //PATCH /api/bank-connections/{connectionId}/syncs/{syncLogId}/complete
     @PatchMapping("/{syncLogId}/complete")
-    @Operation(summary = "Mark sync as completed, called by sync logic when GoCardless import finishes successfully")
+    @Operation(summary = "Mark sync as completed, called by sync logic when Tink import finishes successfully")
     public ResponseEntity<SyncLogResponseDTO> completeSyncLog(
             @PathVariable UUID connectionId,
             @PathVariable UUID syncLogId,
@@ -58,7 +58,7 @@ public class SyncLogController {
 
     //PATCH /api/bank-connections/{connectionId}/syncs/{syncLogId}/fail
     @PatchMapping("/{syncLogId}/fail")
-    @Operation(summary = "Mark sync as failed, called by sync logic when GoCardless import fails")
+    @Operation(summary = "Mark sync as failed, called by sync logic when Tink import fails")
     public ResponseEntity<SyncLogResponseDTO> failSyncLog(
             @PathVariable UUID connectionId,
             @PathVariable UUID syncLogId,

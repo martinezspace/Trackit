@@ -21,7 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     // Ownership check - always verify transaction belongs to this user before any operation
     Optional<Transaction> findByIdAndUserId(UUID id, UUID userId);
 
-    // Idempotency check during import - prevents duplicate transactions from GoCardless
+    // Idempotency check during import - prevents duplicate transactions from Tink
     Optional<Transaction> findByAccountIdAndExternalId(UUID accountId, String externalId);
 
     // Filtered list - all params optional, null means no filter applied
