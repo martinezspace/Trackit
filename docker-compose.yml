@@ -1,0 +1,144 @@
+version: '3.8'
+
+services:
+
+  # ── Databases ────────────────────────────────────────────────────────────────
+
+  investment-postgres:
+    image: postgres:16-alpine
+    container_name: trackit-investment-postgres
+    environment:
+      POSTGRES_DB: investmentdb
+      POSTGRES_USER: trackit
+      POSTGRES_PASSWORD: trackit_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - investment_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trackit -d investmentdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bank-account-postgres:
+    image: postgres:16-alpine
+    container_name: trackit-bank-account-postgres
+    environment:
+      POSTGRES_DB: bankaccountdb
+      POSTGRES_USER: trackit
+      POSTGRES_PASSWORD: trackit_local
+    ports:
+      - "5433:5432"
+    volumes:
+      - bank_account_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trackit -d bankaccountdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak-postgres:
+    image: postgres:16-alpine
+    container_name: trackit-keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloakdb
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_local
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloakdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Auth ─────────────────────────────────────────────────────────────────────
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: trackit-keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloakdb
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_local
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8180
+    ports:
+      - "8180:8180"
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+
+  # ── AWS (LocalStack) ─────────────────────────────────────────────────────────
+
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: trackit-localstack
+    environment:
+      - SERVICES=s3,sqs,secretsmanager,ses
+      - DEFAULT_REGION=eu-central-1
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:-}
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # ── Services ─────────────────────────────────────────────────────────────────
+
+  investment-service:
+    build:
+      context: ./investment-service
+      dockerfile: Dockerfile
+    container_name: trackit-investment-service
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: investment-postgres
+      DB_PORT: 5432
+      DB_NAME: investmentdb
+      DB_USERNAME: trackit
+      DB_PASSWORD: trackit_local
+      AWS_ENDPOINT: http://localstack:4566
+      AWS_REGION: eu-central-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      INTERNAL_KEY: internal-service-key
+    ports:
+      - "8080:8080"
+    depends_on:
+      investment-postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+  bank-account-service:
+    build:
+      context: ./bank-account-service
+      dockerfile: Dockerfile
+    container_name: trackit-bank-account-service
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: bank-account-postgres
+      DB_PORT: 5432
+      DB_NAME: bankaccountdb
+      DB_USERNAME: trackit
+      DB_PASSWORD: trackit_local
+      TINK_CLIENT_ID: ${TINK_CLIENT_ID}
+      TINK_CLIENT_SECRET: ${TINK_CLIENT_SECRET}
+      TINK_REDIRECT_URI: ${TINK_REDIRECT_URI}
+      TINK_WEBHOOK_SECRET: ${TINK_WEBHOOK_SECRET}
+    ports:
+      - "8081:8081"
+    depends_on:
+      bank-account-postgres:
+        condition: service_healthy
+
+volumes:
+  investment_postgres_data:
+  bank_account_postgres_data:
+  keycloak_postgres_data:
+  localstack_data:
