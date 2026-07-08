@@ -9,6 +9,7 @@ import com.trackit.analyticsservice.dto.response.NetWorthSnapshotResponseDTO;
 import com.trackit.analyticsservice.mapper.NetWorthSnapshotMapper;
 import com.trackit.analyticsservice.model.NetWorthSnapshot;
 import com.trackit.analyticsservice.repository.NetWorthSnapshotRepository;
+import com.trackit.analyticsservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -207,7 +208,7 @@ class NetWorthSyncServiceTest {
         when(repository.findTopByUserIdOrderBySnapshotDateDesc(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.getLatest(userId))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("No net worth snapshots found");
     }
 

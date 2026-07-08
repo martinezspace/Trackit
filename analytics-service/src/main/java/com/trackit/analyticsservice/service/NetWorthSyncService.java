@@ -9,6 +9,7 @@ import com.trackit.analyticsservice.dto.response.NetWorthSnapshotResponseDTO;
 import com.trackit.analyticsservice.mapper.NetWorthSnapshotMapper;
 import com.trackit.analyticsservice.model.NetWorthSnapshot;
 import com.trackit.analyticsservice.repository.NetWorthSnapshotRepository;
+import com.trackit.analyticsservice.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,7 @@ public class NetWorthSyncService {
     public NetWorthSnapshotResponseDTO getLatest(UUID userId) {
         return repository.findTopByUserIdOrderBySnapshotDateDesc(userId)
                 .map(mapper::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("No net worth snapshots found for user " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("No net worth snapshots found for user " + userId));
     }
 
     // --- Helpers ---
