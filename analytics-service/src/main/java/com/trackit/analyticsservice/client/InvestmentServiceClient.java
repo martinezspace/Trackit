@@ -1,5 +1,6 @@
 package com.trackit.analyticsservice.client;
 
+import com.trackit.analyticsservice.dto.client.investment.HoldingDTO;
 import com.trackit.analyticsservice.dto.client.investment.InvestmentAccountDTO;
 import com.trackit.analyticsservice.dto.client.investment.PortfolioSnapshotDTO;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,13 @@ public class InvestmentServiceClient {
                 .header("X-User-Id", userId.toString())
                 .retrieve()
                 .body(PortfolioSnapshotDTO.class);
+    }
+
+    public List<HoldingDTO> getHoldings(UUID accountId, UUID userId) {
+        return investmentRestClient.get()
+                .uri("/api/holdings?accountId={accountId}", accountId)
+                .header("X-User-Id", userId.toString())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
     }
 }
