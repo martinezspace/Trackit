@@ -2,6 +2,7 @@ package com.trackit.analyticsservice.client;
 
 import com.trackit.analyticsservice.dto.client.investment.HoldingDTO;
 import com.trackit.analyticsservice.dto.client.investment.InvestmentAccountDTO;
+import com.trackit.analyticsservice.dto.client.investment.InvestmentTransactionDTO;
 import com.trackit.analyticsservice.dto.client.investment.PortfolioSnapshotDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -37,6 +38,14 @@ public class InvestmentServiceClient {
     public List<HoldingDTO> getHoldings(UUID accountId, UUID userId) {
         return investmentRestClient.get()
                 .uri("/api/holdings?accountId={accountId}", accountId)
+                .header("X-User-Id", userId.toString())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+    }
+
+    public List<InvestmentTransactionDTO> getInvestmentTransactions(UUID accountId, UUID userId) {
+        return investmentRestClient.get()
+                .uri("/api/transactions?accountId={accountId}", accountId)
                 .header("X-User-Id", userId.toString())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
